@@ -6,6 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter as Router } from "react-router-dom";
 import "antd/dist/antd.css";
 import { ConfigProvider } from "antd";
+// import client from "./config/gqlClient";
 
 ReactDOM.render(
   <ConfigProvider>

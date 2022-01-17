@@ -1,77 +1,55 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import LayoutApp from "../../components/layout/LayoutApp";
 import { Collapse, Image } from "antd";
+import { useParams } from "react-router-dom";
+import EpisodeContext from "../../context/episode/episodeContext";
 
 const { Panel } = Collapse;
 
 function EpisodesId() {
-  const [dataSource, setDataSource] = useState([
-    {
-      id: 1,
-      character: [
-        {
-          image: "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
-          characters: "Rick Sanchez",
-          status: "Alive",
-          species: "Human",
-        },
-        {
-          image: "https://rickandmortyapi.com/api/character/avatar/2.jpeg",
-          name: "Morty Smith",
-          status: "Alive",
-          species: "Human",
-        },
-      ],
-      location: [
-        {
-          location: 'name: "Earth (C-137)',
-          dimension: "Dimension C-137",
-        },
-      ],
+  const episodeContext = useContext(EpisodeContext);
+  const { getEpisodeId, episodeId } = episodeContext;
 
-      //New
-      type: "Planet",
-      nameCap: "Pilot",
-      air_date: "December 2, 2013",
-      episode: "S01E01",
-    },
-  ]);
+  let { id } = useParams();
+
+
+
+  useEffect(() => {
+    getEpisodeId(id);
+  }, []);
+
+  useEffect(() => {}, [episodeId]);
+
+  let dataSource = [episodeId];
+
+  // console.log(dataSource[0].episode);
 
   function callback(key) {
     console.log(key);
   }
   return (
     <LayoutApp>
-      <Collapse defaultActiveKey={["1"]} onChange={callback}>
-        <Panel header="Info" key="1">
-          <h3>
-            Name of cap:
-            <span>{dataSource[0].nameCap}</span>
-          </h3>
-          <h4>
-            Fecha:
-            <span>{dataSource[0].air_date}</span>
-          </h4>
-          <h4>
-            Episodio:
-            <span>{dataSource[0].episode}</span>
-          </h4>
-          {dataSource[0].location.map((item) => (
-            <>
-              <h4> Location: {item.location}</h4>
-              <h4> Location: {item.dimension}</h4>
-            </>
-          ))}
-        </Panel>
-        <Panel header="Personjes" key="2">
-          {dataSource[0].character.map((item) => (
-            <>
-              <Image src={item.image} />
-              <h4>Personaje: {item.name}</h4>
-            </>
-          ))}
-        </Panel>
-      </Collapse>
+      {!episodeId ? (
+        <span>Cargando...</span>
+      ) : (
+        <>
+          <Collapse defaultActiveKey={["1"]} onChange={callback}>
+            <Panel header="Info" key="1">
+              <h3>
+                Name of cap:{" "}
+                {dataSource[0].episode.nameChapter===undefined ? (
+                  <span></span>
+                ) : (
+                  <span>{dataSource[0].episode.nameChapter}</span>
+                )}
+              </h3>
+              <h4>Fecha:</h4>
+              <h4>Episodio:</h4>
+            </Panel>
+            <Panel header="Personjes" key="2"></Panel>
+          </Collapse>
+        </>
+      )}
     </LayoutApp>
   );
 }

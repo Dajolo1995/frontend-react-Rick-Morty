@@ -13,7 +13,7 @@ function Enlace() {
 
   return (
     <div className="enlace-link">
-      <Button type="link">forgot Password</Button>
+      <span></span>
       {history.pathname === "/auth" ? (
         <Button onClick={handleClick} type="link">
           Register

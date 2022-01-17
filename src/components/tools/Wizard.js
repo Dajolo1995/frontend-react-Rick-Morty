@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Button } from "antd";
 
 function Wizard({ children }) {
   const [activePageIndex, setActivepageInde] = useState(0);
@@ -15,24 +16,24 @@ function Wizard({ children }) {
 
   const ButtonPrev = () =>
     activePageIndex > 0 ? (
-      <button
+      <Button
         type="button"
         onClick={goPrevPage}
         className="wizard__buttons-left"
       >
         Atras
-      </button>
+      </Button>
     ) : null;
 
   const ButtonNext = () =>
     activePageIndex < pages.length - 1 ? (
-      <button
+      <Button
         type="button"
         onClick={goNextPage}
         className="wizard__buttons-right"
       >
         Siguiente
-      </button>
+      </Button>
     ) : null;
   return (
     <div className="wizard">

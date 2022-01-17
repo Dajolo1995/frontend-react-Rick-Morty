@@ -1,14 +1,14 @@
-import React, { useState } from "react";
-import { Card, Input } from "antd";
+import React, { useState, useContext } from "react";
+import { Button, Input } from "antd";
 import { useNavigate } from "react-router-dom";
-import styled from "@emotion/styled";
 import Swal from "sweetalert2";
+import credentials from "../../services/index";
+import AuthContext from "../../context/login/authContext";
 
-const Cards = styled(Card)`
-  border-radius: 10px;
-`;
+function CodAuth({ setCard }) {
+  const authContext = useContext(AuthContext);
+  const { cerrar } = authContext;
 
-function CodAuth() {
   let navigate = useNavigate();
 
   const [cod, setCod] = useState({
@@ -17,12 +17,22 @@ function CodAuth() {
 
   const { codigo } = cod;
 
+  const onClickClose = () => {
+    cerrar();
+    setCard(0)
+
+  };
+
   const onChange = (e) => {
     setCod({
       ...cod,
       [e.target.name]: e.target.value,
     });
   };
+
+  let data = credentials.getUser();
+
+
 
   const sendForm = (e) => {
     e.preventDefault();
@@ -32,29 +42,38 @@ function CodAuth() {
         text: "All fields are required!",
         icon: "error",
       });
+    } else if (codigo !== data.cod) {
+      Swal.fire({
+        title: "Error!",
+        text: "The code is wrong!",
+        icon: "error",
+      });
     } else {
-      alert("Success");
+      Swal.fire({
+        title: "Ok!",
+        text: "Welcome",
+        icon: "success",
+      });
       navigate("/");
     }
   };
 
   return (
-    <div className="login-or-register">
-      <div className="card-auth">
-        <Cards title="authentication code" bordered={false}>
-          <form onSubmit={sendForm}>
-            <Input
-              name="codigo"
-              value={codigo}
-              onChange={onChange}
-              maxLength={6}
-              allowClear
-            />
-            <button className="button-login">Next</button>
-          </form>
-        </Cards>
-      </div>
-    </div>
+    <>
+      <form onSubmit={sendForm}>
+        <Input
+          name="codigo"
+          value={codigo}
+          onChange={onChange}
+          maxLength={6}
+          allowClear
+        />
+        <button className="button-login">Next</button>
+      </form>
+      <Button type="link" onClick={onClickClose}>
+        Previous
+      </Button>
+    </>
   );
 }
 

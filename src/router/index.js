@@ -8,16 +8,48 @@ import Episodes from "../views/episodes/Episodes";
 import EpisodesId from "../views/episodesId/EpisodesId";
 
 import { Route, Routes } from "react-router-dom";
+import { PrivateApp } from "./PrivateApp";
 const index = () => {
   return (
     <Routes>
       <Route path="/auth" element={<AuthLogin />}></Route>
       <Route path="/register" element={<Register />}></Route>
+
       <Route path="/authetication" element={<CodAuth />}></Route>
-      <Route path="/" element={<Home />}></Route>
-      <Route path="/lugares" element={<Places />}></Route>
-      <Route path="/episodes" element={<Episodes />}></Route>
-      <Route path="/episodes/:id" element={<EpisodesId />}></Route>
+
+      <Route
+        path="/"
+        element={
+          <PrivateApp>
+            <Home />
+          </PrivateApp>
+        }
+      ></Route>
+
+      <Route
+        path="/lugares"
+        element={
+          <PrivateApp>
+            <Places />
+          </PrivateApp>
+        }
+      ></Route>
+      <Route
+        path="/episodes"
+        element={
+          <PrivateApp>
+            <Episodes />
+          </PrivateApp>
+        }
+      ></Route>
+      <Route
+        path="/episodes/:id"
+        element={
+          <PrivateApp>
+            <EpisodesId />
+          </PrivateApp>
+        }
+      ></Route>
     </Routes>
   );
 };

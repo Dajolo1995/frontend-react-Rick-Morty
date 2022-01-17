@@ -1,92 +1,35 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import LayoutApp from "../../components/layout/LayoutApp";
 import Spin from "../../components/tools/Spin";
 import Contents from "./contents/Contents";
+import ApiContext from "../../context/api/apiContext";
 
 function Home() {
-  let datos = [
-    {
-      id: 1,
-      name: "Rick Sanchez",
-      status: "Alive",
-      species: "Human",
-      type: "",
-      gender: "Male",
-      image: "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
-    },
-    {
-      id: 2,
-      name: "Morty Smith",
-      status: "Alive",
-      species: "Human",
-      type: "",
-      gender: "Male",
-      image: "https://rickandmortyapi.com/api/character/avatar/2.jpeg",
-    },
-    {
-      id: 1,
-      name: "Rick Sanchez",
-      status: "Alive",
-      species: "Human",
-      type: "",
-      gender: "Male",
-      image: "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
-    },
-    {
-      id: 2,
-      name: "Morty Smith",
-      status: "Alive",
-      species: "Human",
-      type: "",
-      gender: "Male",
-      image: "https://rickandmortyapi.com/api/character/avatar/2.jpeg",
-    },
-
-    {
-      id: 1,
-      name: "Rick Sanchez",
-      status: "Alive",
-      species: "Human",
-      type: "",
-      gender: "Male",
-      image: "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
-    },
-    {
-      id: 2,
-      name: "Morty Smith",
-      status: "Alive",
-      species: "Human",
-      type: "",
-      gender: "Male",
-      image: "https://rickandmortyapi.com/api/character/avatar/2.jpeg",
-    },
-    {
-        id: 1,
-        name: "Rick Sanchez",
-        status: "Alive",
-        species: "Human",
-        type: "",
-        gender: "Male",
-        image: "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
-      },
-      {
-        id: 2,
-        name: "Morty Smith",
-        status: "Alive",
-        species: "Human",
-        type: "",
-        gender: "Male",
-        image: "https://rickandmortyapi.com/api/character/avatar/2.jpeg",
-      },
-  ];
-
+  const apiContext = useContext(ApiContext);
+  const { character, getCharacter } = apiContext;
   const [data, setData] = useState(0);
+  const [dataSource, setDataSource] = useState();
+  const [pagination, setPagination] = useState(1);
+
+
 
   useEffect(() => {
-    setTimeout(() => {
-      if (!datos) setData(2);
-      else setData(1);
-    }, 5000);
+    getCharacter(pagination);
+  }, [pagination]);
+
+  useEffect(() => {
+    setDataSource(character);
+  }, [character]);
+
+  useEffect(() => {
+    if (dataSource) {
+      setData(1);
+    } else {
+      setTimeout(() => {
+        if (!dataSource) setData(2);
+        setData(1);
+      }, 2000);
+    }
   }, []);
 
   return (
@@ -95,7 +38,13 @@ function Home() {
         <Spin />
       ) : data === 1 ? (
         <>
-          <Contents datos={datos} />
+          {
+            <Contents
+              dataSource={dataSource}
+              pagination={pagination}
+              setPagination={setPagination}
+            />
+          }
         </>
       ) : (
         <span>No hay datos</span>

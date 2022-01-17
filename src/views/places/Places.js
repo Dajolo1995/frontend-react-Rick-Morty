@@ -1,94 +1,124 @@
 import React, { useState, useEffect } from "react";
 import LayoutApp from "../../components/layout/LayoutApp";
-import { Table } from "antd";
+import { Collapse, Row, Image, Col } from "antd";
 import Spin from "../../components/tools/Spin";
+import { gql, useQuery } from "@apollo/client";
+import styled from "@emotion/styled";
+import Paginations from "../../components/button/Paginations";
+const { Panel } = Collapse;
+
+const Img = styled(Image)`
+  width: 240px;
+  margin-left: 15px;
+`;
+
+const ColPagination = styled(Col)`
+margin-top; 10px;
+  display: flex;
+  justify-content: center
+`;
+
+const RICK = gql`
+  query getLocations($page: Int) {
+    locations(page: $page) {
+      results {
+        id
+        name
+        type
+        dimension
+        residents {
+          id
+          name
+          species
+          image
+        }
+      }
+    }
+  }
+`;
 
 function Places() {
-  let datos = [
-    {
-      id: 1,
-      name: "Earth (C-137)",
-      type: "Planet",
-      dimension: "Dimension C-137",
-    },
-    {
-      id: 2,
-      name: "Abadango",
-      type: "Cluster",
-      dimension: "unknown",
-    },
-    {
-      id: 3,
-      name: "Citadel of Ricks",
-      type: "Space station",
-      dimension: "unknown",
-    },
-    {
-      id: 4,
-      name: "Worldender's lair",
-      type: "Planet",
-      dimension: "unknown",
-    },
-  ];
+  const [pagination, setPagination] = useState(1);
+  const [datas, setDatas] = useState(0);
+  const [dataSoure, setdataSoure] = useState();
 
-  const columns = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+  const { loading, error, data } = useQuery(RICK, {
+    variables: {
+      page: pagination,
     },
-    {
-      title: "Type",
-      dataIndex: "type",
-      key: "type",
-    },
-    {
-      title: "Dimesion",
-      dataIndex: "dimension",
-      key: "dimension",
-    },
-  ];
+  });
 
-  const [data, setData] = useState(0);
-  const [dataSource, setDataSource] = useState();
+  function callback(key) {
+    console.log(key);
+  }
 
-  const TableData = (datos) => {
-    let tableData = [];
-    datos.forEach((i) => {
-      tableData.push({
-        name: i.name,
-        dimension:i.dimension,
-        type: i.type
-      });
-    });
 
-    return tableData;
-  };
 
   useEffect(() => {
-    setTimeout(() => {
-      if (!datos) setData(2);
-      else setData(1);
-    }, 5000);
-  }, []);
+    if (data) {
+      setDatas(1);
+    } else {
+      setTimeout(() => {
+        if (!data) setDatas(2);
+        setDatas(1);
+      }, 10000);
+    }
+  }, [data]);
 
   useEffect(() => {
-    setDataSource(TableData(datos));
-  }, []);
+    if (data) {
+      setdataSoure(data.locations.results);
+    }
+  }, [data]);
 
-  console.log(dataSource);
+  // console.log(dataSoure.residents);
 
   return (
     <LayoutApp>
-      {data === 0 ? (
+      {datas === 0 ? (
         <Spin />
-      ) : data === 1 ? (
-        <>
-          <Table columns={columns} dataSource={dataSource} />
-        </>
-      ) : (
+      ) : datas === 2 && !data ? (
         <span>No hay datos</span>
+      ) : (
+        <>
+          <Collapse defaultActiveKey={[1]} onChange={callback}>
+            {dataSoure.map((item) => (
+              <Panel header={item.name} key={item.id}>
+                <Row>
+                  <Col span={24}>
+                    <h3>
+                      Dimension: <span>{item.dimension}</span>
+                    </h3>
+                    <h3>
+                      Tipo: <span>{item.type}</span>
+                    </h3>
+                    <hr />
+                    <h3>Residentes:</h3>
+                  </Col>
+                </Row>
+
+                <Row>
+                  <Col span={24} className="div-collapse">
+                    {item.residents.map((items) => (
+                      <Img src={items.image} />
+                    ))}
+                  </Col>
+                </Row>
+              </Panel>
+            ))}
+          </Collapse>
+        </>
       )}
+
+      {/* <Row>
+        <ColPagination span={24}>
+          <Paginations
+            dataSource={data}
+            pagination={pagination}
+            setPagination={setPagination}
+          />
+        </ColPagination>
+      </Row> */}
     </LayoutApp>
   );
 }

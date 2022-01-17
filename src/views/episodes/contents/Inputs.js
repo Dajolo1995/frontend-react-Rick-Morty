@@ -1,64 +1,79 @@
 import React from "react";
 import { Input, DatePicker, Select } from "antd";
-
+import styled from "@emotion/styled";
 
 const { Option } = Select;
-function Inputs() {
 
-    let datos = [
-        {
-          id: 1,
-          name: "Earth (C-137)",
-          type: "Planet",
-          dimension: "Dimension C-137",
-        },
-        {
-          id: 2,
-          name: "Abadango",
-          type: "Cluster",
-          dimension: "unknown",
-        },
-        {
-          id: 3,
-          name: "Citadel of Ricks",
-          type: "Space station",
-          dimension: "unknown",
-        },
-        {
-          id: 4,
-          name: "Worldender's lair",
-          type: "Planet",
-          dimension: "unknown",
-        },
-      ];
+const Inputss = styled(Input)`
+  margin-bottom: 10px;
+`;
+
+const DatePickers = styled(DatePicker)`
+  margin-right: 10px;
+`;
+
+function Inputs({
+  data,
+  newEpisode,
+  onChangeEpisode,
+  onChangeDatePicker,
+  setNewEpisode,
+}) {
+  const { nameChapter, nameEpisode, location } = newEpisode;
+
   function onChange(value) {
-    console.log(`selected ${value}`);
+
+    let pos = data.locations.results.findIndex((el) => el.id == value);
+    let locations = data.locations.results[pos];
+
+    setNewEpisode({
+      ...newEpisode,
+      location: [locations],
+    });
   }
 
   function onSearch(val) {
-    console.log("search:", val);
+ 
   }
   return (
     <>
-      <Input placeholder="name of chapter" />
-      <Input placeholder="Episode" />
-      <DatePicker />
-      <Select
-        showSearch
-        placeholder="Select a person"
-        optionFilterProp="children"
-        onChange={onChange}
-        onSearch={onSearch}
-        filterOption={(input, option) =>
-          option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-        }
-      >
-          {datos.map((item) => (
-              <>
-               <Option value={item.name}>{item.name} - {item.dimension}</Option>
-              </>
+      <Inputss
+        name="nameChapter"
+        value={nameChapter}
+        onChange={onChangeEpisode}
+        placeholder="name of chapter"
+      />
+      <Inputss
+        name="nameEpisode"
+        value={nameEpisode}
+        onChange={onChangeEpisode}
+        placeholder="Episode"
+      />
+      <DatePickers onChange={onChangeDatePicker} />
+      {!data ? (
+        <>
+          <span></span>
+        </>
+      ) : (
+        <Select
+          showSearch
+          placeholder="Select a person"
+          optionFilterProp="children"
+          onChange={onChange}
+          onSearch={onSearch}
+          filterOption={(input, option) =>
+            option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          {data.locations.results.map((item) => (
+            <>
+              <Option value={item.id}>
+                {item.name} - {item.dimension}
+              </Option>
+            </>
           ))}
-      </Select>
+        </Select>
+      )}
     </>
   );
 }

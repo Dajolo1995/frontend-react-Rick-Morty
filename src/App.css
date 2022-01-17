@@ -64,19 +64,27 @@
 }
 
 .button-login {
-  background: #4fd921;
-  color: #fff;
+  background: #fff;
+  color: #262c3a;
   width: 100%;
-  border: none;
+  border: 1px solid #262c3a;
   border-radius: 10px;
   font-size: 16px;
   margin-top: 10px;
   cursor: pointer;
+  font-weight: bold;
 }
 
 .button-login:hover {
   font-size: 16px;
   background: #262c3a;
+  color: #fff;
+}
+
+.button-login:focus {
+  font-size: 16px;
+  background: #262c3a;
+  color: #fff;
 }
 
 .ant-card-head {
@@ -145,15 +153,17 @@ input[type="number"] {
 .btn-menus {
   background-color: #e6f7ff !important;
   border-right: 3px solid #1890ff;
+
 }
 
-.btn-menu{
+.btn-menu {
   background-color: #fff !important;
   border: none !important;
-  color: #000 !important
+  color: #000 !important;
+
 }
 
-.ant-menu-inline .ant-menu-item::after{
+.ant-menu-inline .ant-menu-item::after {
   border: none !important;
 }
 
@@ -168,8 +178,6 @@ input[type="number"] {
     "content"
     "buttons";
 }
-
-
 
 .wizard__buttons {
   grid-area: buttons;
@@ -188,4 +196,3 @@ input[type="number"] {
   grid-area: right;
   float: right;
 }
-

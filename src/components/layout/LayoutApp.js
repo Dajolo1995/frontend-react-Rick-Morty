@@ -1,20 +1,56 @@
-import React from "react";
-import { Layout, Menu } from "antd";
+import React, { useContext } from "react";
+import { Layout, Menu, Button } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
+import credentials from "../../services";
+import styled from "@emotion/styled";
+import AuthContext from "../../context/login/authContext";
 
 const { Header, Content, Sider } = Layout;
 
+const Headers = styled(Header)`
+  display: flex;
+  justify-content: space-between;
+`;
+
 function LayoutApp({ children }) {
+  const authContext = useContext(AuthContext);
+
+  const { cerrar } = authContext;
+
   let navigate = useNavigate();
   let location = useLocation();
-  console.log(location);
+
+  let name = credentials.getUser();
+
+  const onClickClose = () => {
+    cerrar();
+    navigate("/auth");
+
+  };
+
+
   return (
     <Layout style={{ minHeight: "100vh", width: "100%" }}>
-      <Header className="header">
-        <div className="logo" />
-      </Header>
+      <Headers className="header">
+        <div>
+          <span style={{ color: "#fff", fontWeight: "bold" }}>{name.name}</span>
+        </div>
+
+        <div>
+          <Button onClick={onClickClose}>Exit</Button>
+        </div>
+      </Headers>
       <Layout>
-        <Sider width={200} className="site-layout-background">
+        <Sider
+          style={{
+            height: "100vh",
+            left: 0,
+            top: 0,
+            bottom: 0,
+          }}
+          width={200}
+          className="site-layout-background"
+        >
           <Menu
             mode="inline"
             defaultSelectedKeys={["1"]}

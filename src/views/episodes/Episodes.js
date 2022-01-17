@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import LayoutApp from "../../components/layout/LayoutApp";
 import { Row, Col, Table, Button } from "antd";
 import Search from "./contents/Search";
@@ -6,6 +6,8 @@ import styled from "@emotion/styled";
 import ModalForm from "./contents/ModalForm";
 import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import EpisodeContext from "../../context/episode/episodeContext";
+import { gql, useQuery } from "@apollo/client";
 
 const RowHeader = styled(Row)`
   margin-bottom: 10px;
@@ -20,41 +22,37 @@ const ButtonDelete = styled(Button)`
   }
 `;
 
+const RICK = gql`
+  query getLocations($page: Int) {
+    locations(page: $page) {
+      results {
+        id
+        name
+        type
+        dimension
+        residents {
+          id
+          name
+          species
+          image
+        }
+      }
+    }
+  }
+`;
+
 function Episodes() {
+  const episodeContext = useContext(EpisodeContext);
+  const { episode, getEpisode, createEpisode, deleteEpisode } = episodeContext;
+  const [pagination, setPagination] = useState(1);
+  let navigate = useNavigate();
 
-  let navigate = useNavigate()
-  const [dataSource, setDataSource] = useState([
-    {
-      id:1,
-      character: [
-        {
-          image: "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
-          characters: "Rick Sanchez",
-          status: "Alive",
-          species: "Human",
-        },
-        {
-          image: "https://rickandmortyapi.com/api/character/avatar/2.jpeg",
-          name: "Morty Smith",
-          status: "Alive",
-          species: "Human",
-        },
-      ],
-      location: [
-        {
-          location: 'name: "Earth (C-137)',
-          dimension: "Dimension C-137",
-        },
-      ],
-
-      //New
-      type: "Planet",
-      nameCap: "Pilot",
-      air_date: "December 2, 2013",
-      episode: "S01E01",
+  const [dataSource, setDataSource] = useState();
+  const { loading, error, data } = useQuery(RICK, {
+    variables: {
+      page: pagination,
     },
-  ]);
-
+  });
 
   const columns = [
     {
@@ -63,42 +61,53 @@ function Episodes() {
       key: "nameCap",
     },
     {
-      title: "Dimesion",
-      dataIndex: "dimension",
-      key: "dimension",
-      render: (text, record) => (
-        <>
-          <span>{dataSource[0].location[0].dimension}</span>
-        </>
-      ),
+      title: "episode",
+      dataIndex: "episode",
+      key: "episode",
     },
-
     {
       title: "date",
       dataIndex: "air_date",
       key: "air_date",
     },
-    {
-      title: "episode",
-      dataIndex: "episode",
-      key: "episode",
-    },
+
     {
       title: "",
       dataIndex: "",
       key: "",
       render: (text, record) => (
         <>
-          <Button onClick={()=> navigate(`/episodes/${record.id}`)}>
+          {/* <Button onClick={() => navigate(`/episodes/${record.id}`)}>
             <EyeOutlined />
-          </Button>
-          <ButtonDelete>
+          </Button> */}
+          <ButtonDelete onClick={()=> deleteEpisode(record.id)}>
             <DeleteOutlined />
           </ButtonDelete>
         </>
       ),
     },
   ];
+
+  useEffect(() => {
+    getEpisode();
+  }, []);
+
+  useEffect(() => {
+    setDataSource(TableData(episode));
+  }, [episode]);
+
+  const TableData = (episode) => {
+    let tableData = [];
+    episode.forEach((i) => {
+      tableData.push({
+        id: i.id,
+        nameCap: i.nameChapter,
+        air_date: i.date,
+        episode: i.nameEpisode,
+      });
+    });
+    return tableData;
+  };
 
   return (
     <LayoutApp>
@@ -107,7 +116,7 @@ function Episodes() {
           <Search />
         </Col>
         <Col span={4}>
-          <ModalForm />
+          <ModalForm createEpisode={createEpisode} data={data} />
         </Col>
       </RowHeader>
 
